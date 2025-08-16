@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css';
+import config from './config';
 
 function App() {
   const [transcript, setTranscript] = useState('');
@@ -39,7 +40,7 @@ function App() {
       setError('');
       setSuccess('');
       
-      const response = await fetch('http://localhost:5000/api/generate-summary', {
+      const response = await fetch(`${config.apiUrl}/api/generate-summary`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +85,7 @@ function App() {
       
       const recipientList = recipients.split(',').map(email => email.trim());
       
-      const response = await fetch('http://localhost:5000/api/send-email', {
+      const response = await fetch(`${config.apiUrl}/api/send-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
