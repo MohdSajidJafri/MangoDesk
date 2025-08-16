@@ -12,9 +12,11 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://mangodesk-meeting-summarizer.onrender.com'] 
+    ? ['https://mangodesk.netlify.app', 'https://mangodesk-meeting-summarizer.onrender.com'] 
     : 'http://localhost:3000',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
@@ -42,7 +44,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Route to generate summary
-app.post('/api/generate-summary', upload.single('transcript'), async (req, res) => {
+app.post('/api/generate-summary', cors(), upload.single('transcript'), async (req, res) => {
   try {
     // Get transcript from file or text input
     const transcript = req.file 
@@ -70,7 +72,7 @@ app.post('/api/generate-summary', upload.single('transcript'), async (req, res) 
 });
 
 // Route to send email
-app.post('/api/send-email', async (req, res) => {
+app.post('/api/send-email', cors(), async (req, res) => {
   try {
     const { recipients, subject, summary } = req.body;
     
@@ -115,8 +117,16 @@ app.post('/api/send-email', async (req, res) => {
   }
 });
 
+// CORS preflight OPTIONS handler
+app.options('*', cors());
+
 // Root route to confirm server is running
 app.get('/', (req, res) => {
+  // Set CORS headers explicitly
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
   res.json({ message: 'Meeting Notes Summarizer API is running' });
 });
 
