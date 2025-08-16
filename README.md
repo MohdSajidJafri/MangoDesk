@@ -37,14 +37,17 @@ An AI-powered application to summarize meeting transcripts and share them via em
    npm install
    ```
 
-3. Configure email credentials:
+3. Configure environment variables:
    - Create a `.env` file in the backend directory
    - Add the following variables:
      ```
      EMAIL_USER=your-email@gmail.com
      EMAIL_PASS=your-app-password
+     GEMINI_API_KEY=your-gemini-api-key
      ```
-   - Note: For Gmail, you'll need to create an App Password. See [Google Account Help](https://support.google.com/accounts/answer/185833) for instructions.
+   - Note: 
+     - For Gmail, you'll need to create an App Password. See [Google Account Help](https://support.google.com/accounts/answer/185833) for instructions.
+     - For Gemini API key, visit [Google AI Studio](https://ai.google.dev/) and create an API key.
 
 4. Start the backend server:
    ```

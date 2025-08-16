@@ -20,6 +20,7 @@ This guide provides step-by-step instructions for deploying both the frontend an
 5. Add the following environment variables:
    - `EMAIL_USER`: Your Gmail address
    - `EMAIL_PASS`: Your Gmail app password
+   - `GEMINI_API_KEY`: Your Google Gemini API key
    - `NODE_ENV`: `production`
 
 6. Click "Create Web Service" and wait for the deployment to complete.

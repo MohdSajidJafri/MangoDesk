@@ -21,7 +21,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Initialize Google Generative AI
-const API_KEY = 'AIzaSyA4pR4Hj8t2gwyDwzZ2LODSrOJ0Osq1j8Q';
+const API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyA4pR4Hj8t2gwyDwzZ2LODSrOJ0Osq1j8Q'; // Fallback for development
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 // Email transporter configuration

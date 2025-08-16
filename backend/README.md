@@ -1,8 +1,8 @@
 # Backend Setup Instructions
 
-## Email Configuration
+## Environment Configuration
 
-To enable email sending functionality, you need to set up your email credentials:
+To enable the application functionality, you need to set up your environment variables:
 
 1. Create a file named `.env` in this directory
 2. Add the following content to the file:
@@ -10,9 +10,12 @@ To enable email sending functionality, you need to set up your email credentials
 ```
 EMAIL_USER=your-gmail-address@gmail.com
 EMAIL_PASS=your-app-password
+GEMINI_API_KEY=your-gemini-api-key
 ```
 
-### How to get an App Password for Gmail:
+### How to get your API keys:
+
+#### Gmail App Password:
 
 1. Go to your Google Account settings
 2. Navigate to Security
@@ -22,6 +25,14 @@ EMAIL_PASS=your-app-password
 6. Enter "Meeting Notes Summarizer" as the app name
 7. Click "Generate"
 8. Use the 16-character password that appears
+
+#### Gemini API Key:
+
+1. Go to https://ai.google.dev/
+2. Sign in with your Google account
+3. Navigate to "Get API key" in the top menu
+4. Create a new project or select an existing one
+5. Click "Create API Key" and copy the generated key
 
 ## Running the Backend
 
