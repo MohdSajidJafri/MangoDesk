@@ -2,6 +2,16 @@ import { useState } from 'react';
 import './App.css';
 import config from './config';
 import ReactMarkdown from 'react-markdown';
+import { 
+  FiFileText, 
+  FiSend, 
+  FiEdit, 
+  FiMail, 
+  FiAlertCircle, 
+  FiCheckCircle, 
+  FiCpu, 
+  FiLoader
+} from 'react-icons/fi';
 
 function App() {
   const [transcript, setTranscript] = useState('');
@@ -122,9 +132,14 @@ function App() {
       <header className="App-header">
         <h1>Meeting Notes Summarizer</h1>
       </header>
+      
       <main className="App-main">
         <section className="input-section">
-          <h2>Input Meeting Transcript</h2>
+          <div className="section-title">
+            <FiFileText size={20} />
+            <h2>Input Meeting Transcript</h2>
+          </div>
+          
           <form onSubmit={handleGenerateSummary}>
             <div className="form-group">
               <label htmlFor="transcript">Meeting Transcript:</label>
@@ -133,10 +148,11 @@ function App() {
                 value={transcript}
                 onChange={handleTranscriptChange}
                 placeholder="Paste your meeting transcript here..."
-                rows="10"
+                rows="8"
                 required
               />
             </div>
+            
             <div className="form-group">
               <label htmlFor="prompt">Custom Instruction (optional):</label>
               <input
@@ -147,30 +163,55 @@ function App() {
                 placeholder="e.g., Summarize in bullet points for executives"
               />
             </div>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Generating...' : 'Generate Summary'}
-            </button>
+            
+            <div className="btn-container">
+              <button type="submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <FiLoader className="icon-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <FiCpu />
+                    Generate Summary
+                  </>
+                )}
+              </button>
+            </div>
           </form>
         </section>
 
         {summary && (
           <section className="output-section">
-            <h2>Generated Summary</h2>
+            <div className="section-title">
+              <FiEdit size={20} />
+              <h2>Generated Summary</h2>
+            </div>
+            
             <form onSubmit={handleSendEmail}>
               <div className="form-group">
-                <label htmlFor="summary">Edit Summary:</label>
+                <label htmlFor="summary-preview">Preview:</label>
                 <div className="markdown-preview">
                   <ReactMarkdown>{summary}</ReactMarkdown>
                 </div>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="summary">Edit Summary:</label>
                 <textarea
                   id="summary"
                   value={summary}
                   onChange={handleSummaryChange}
-                  rows="10"
+                  rows="8"
                 />
               </div>
+              
               <div className="form-group">
-                <label htmlFor="recipients">Recipient Emails (comma-separated):</label>
+                <label htmlFor="recipients">
+                  <FiMail size={16} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
+                  Recipient Emails (comma-separated):
+                </label>
                 <input
                   type="text"
                   id="recipients"
@@ -180,15 +221,39 @@ function App() {
                   required
                 />
               </div>
-              <button type="submit" disabled={loading}>
-                {loading ? 'Sending...' : 'Send Email'}
-              </button>
+              
+              <div className="btn-container">
+                <button type="submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <FiLoader className="icon-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <FiSend />
+                      Send Email
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
           </section>
         )}
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">{success}</div>}
+        {error && (
+          <div className="message error-message">
+            <FiAlertCircle size={20} />
+            {error}
+          </div>
+        )}
+        
+        {success && (
+          <div className="message success-message">
+            <FiCheckCircle size={20} />
+            {success}
+          </div>
+        )}
       </main>
     </div>
   );
