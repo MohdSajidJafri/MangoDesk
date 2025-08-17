@@ -41,12 +41,17 @@ const SummaryForm = ({
             </div>
             <form onSubmit={onGenerateSummary}>
               <div className="form-group">
-                <label htmlFor="transcript">Meeting Transcript:</label>
+                <label htmlFor="transcript">
+                  Meeting Transcript: 
+                  <span className="input-hint">
+                    (Must be a proper meeting transcript with speakers and dialogue)
+                  </span>
+                </label>
                 <textarea
                   id="transcript"
                   value={transcript}
                   onChange={onTranscriptChange}
-                  placeholder="Paste your meeting transcript here..."
+                  placeholder="Paste your meeting transcript here with format like:\n\nJohn: Good morning everyone!\nSarah: Hi John, let's discuss the project updates.\nJohn: Great idea, I've prepared some notes..."
                   rows="8"
                   required
                 />

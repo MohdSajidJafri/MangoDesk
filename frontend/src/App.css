@@ -372,6 +372,14 @@ label {
   font-size: 0.95rem;
 }
 
+.input-hint {
+  font-weight: normal;
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-left: 5px;
+  font-style: italic;
+}
+
 textarea, input[type="text"] {
   width: 100%;
   padding: 12px 15px;
@@ -596,6 +604,19 @@ textarea {
   background-color: var(--secondary-light);
   color: var(--error);
   border-left: 4px solid var(--error);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
 }
 
 .success-notification {
