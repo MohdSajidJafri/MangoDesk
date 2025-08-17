@@ -3,6 +3,7 @@ const cors = require('cors');
 const multer = require('multer');
 const nodemailer = require('nodemailer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const marked = require('marked');
 require('dotenv').config();
 
 // Initialize Express app
@@ -90,6 +91,9 @@ app.post('/api/send-email', async (req, res) => {
       });
     }
 
+    // Convert markdown to HTML for email
+    const htmlSummary = marked.parse(summary);
+    
     // Send email
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -97,7 +101,9 @@ app.post('/api/send-email', async (req, res) => {
       subject: subject || 'Meeting Summary',
       html: `
         <h2>Meeting Summary</h2>
-        <div style="white-space: pre-wrap;">${summary}</div>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          ${htmlSummary}
+        </div>
       `,
     };
 

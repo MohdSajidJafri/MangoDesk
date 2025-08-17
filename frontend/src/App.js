@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import config from './config';
+import ReactMarkdown from 'react-markdown';
 
 function App() {
   const [transcript, setTranscript] = useState('');
@@ -158,6 +159,9 @@ function App() {
             <form onSubmit={handleSendEmail}>
               <div className="form-group">
                 <label htmlFor="summary">Edit Summary:</label>
+                <div className="markdown-preview">
+                  <ReactMarkdown>{summary}</ReactMarkdown>
+                </div>
                 <textarea
                   id="summary"
                   value={summary}
