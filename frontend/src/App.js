@@ -130,7 +130,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Meeting Notes Summarizer</h1>
+        <h1>Briefly(AI Meeting Summarizer)</h1>
       </header>
       
       <main className="App-main">
