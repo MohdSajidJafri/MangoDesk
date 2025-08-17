@@ -14,11 +14,11 @@ export const validateTranscript = (text) => {
   }
 
   // REQUIRED: Must have the "Name: text" pattern
-  const speakerPattern = /\b\w+\s*[:]\s*\S+/;
+  const speakerPattern = /^[A-Za-z][A-Za-z0-9\s]*[:]/m;  // More lenient pattern that matches at line start
   const hasNameColonPattern = speakerPattern.test(text);
   
   // Must have multiple speakers (at least 2 different people)
-  const speakerMatches = text.match(/\b\w+\s*[:]/g) || [];
+  const speakerMatches = text.match(/^[A-Za-z][A-Za-z0-9\s]*[:]/gm) || [];
   const speakers = new Set(speakerMatches.map(s => s.replace(':', '').trim()));
   const hasMultipleSpeakers = speakers.size >= 2;
   
@@ -28,7 +28,12 @@ export const validateTranscript = (text) => {
   // Check for JSON, code, or other non-transcript content
   const isJSON = text.trim().startsWith('{') && text.trim().endsWith('}');
   const isCode = /function|const|var|let|import|export|class|if\s*\(|for\s*\(|while\s*\(/.test(text);
-  const containsBrackets = /{[\s\S]*}/.test(text) && /[{};]/.test(text);
+  
+  // Look for code-like structure (multiple brackets and semicolons)
+  // This is a more nuanced check that won't reject transcripts that happen to contain a few brackets
+  const codeLikeStructure = (text.match(/{/g) || []).length > 2 && 
+                           (text.match(/}/g) || []).length > 2 && 
+                           (text.match(/;/g) || []).length > 3;
   
   // If any of these critical checks fail, it's not a transcript
   if (!hasNameColonPattern) {
@@ -52,7 +57,7 @@ export const validateTranscript = (text) => {
     };
   }
   
-  if (isJSON || isCode || containsBrackets) {
+  if (isJSON || isCode || codeLikeStructure) {
     return {
       isValid: false,
       reason: 'INVALID CONTENT: The text appears to be code or JSON, not a meeting transcript.'
