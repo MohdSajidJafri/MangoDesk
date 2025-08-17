@@ -11,7 +11,6 @@ import {
   FiCheckCircle, 
   FiCpu, 
   FiLoader,
-  FiEye,
   FiEyeOff
 } from 'react-icons/fi';
 
