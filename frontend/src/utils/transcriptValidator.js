@@ -1,69 +1,68 @@
 /**
- * Validates if the input text is a proper meeting transcript
+ * Simple validator that only rejects the most obvious non-transcript formats
  * 
  * @param {string} text - The text to validate
  * @returns {object} - { isValid: boolean, reason: string }
  */
 export const validateTranscript = (text) => {
-  // Check if text is empty or too short
-  if (!text || text.trim().length < 50) {
+  // Check if text is empty
+  if (!text || text.trim().length === 0) {
     return { 
       isValid: false, 
-      reason: 'The transcript is too short. Please provide a complete meeting transcript.'
+      reason: 'Please provide a transcript.'
     };
   }
 
-  // REQUIRED: Must have the "Name: text" pattern
-  const speakerPattern = /^[A-Za-z][A-Za-z0-9\s]*[:]/m;  // More lenient pattern that matches at line start
-  const hasNameColonPattern = speakerPattern.test(text);
+  // Very basic check for JSON
+  try {
+    // If this succeeds, it's likely JSON
+    if (text.trim().startsWith('{') && text.trim().endsWith('}')) {
+      JSON.parse(text);
+      return {
+        isValid: false,
+        reason: 'The input appears to be JSON data, not a meeting transcript.'
+      };
+    }
+  } catch (e) {
+    // Not valid JSON, which is good
+  }
   
-  // Must have multiple speakers (at least 2 different people)
-  const speakerMatches = text.match(/^[A-Za-z][A-Za-z0-9\s]*[:]/gm) || [];
-  const speakers = new Set(speakerMatches.map(s => s.replace(':', '').trim()));
-  const hasMultipleSpeakers = speakers.size >= 2;
+  // Very basic check for code snippets
+  const codePatterns = [
+    /function\s+\w+\s*\(/i,
+    /const|let|var\s+\w+\s*=/i,
+    /import\s+.*\s+from/i,
+    /export\s+(default\s+)?(class|function|const)/i,
+    /<\/?[a-z]+[^>]*>/i  // HTML tags
+  ];
   
-  // Must have conversational structure (multiple lines)
-  const hasConversationalStructure = text.split('\n').length >= 3;
+  for (const pattern of codePatterns) {
+    if (pattern.test(text)) {
+      return {
+        isValid: false,
+        reason: 'The input appears to be code, not a meeting transcript.'
+      };
+    }
+  }
   
-  // Check for JSON, code, or other non-transcript content
-  const isJSON = text.trim().startsWith('{') && text.trim().endsWith('}');
-  const isCode = /function|const|var|let|import|export|class|if\s*\(|for\s*\(|while\s*\(/.test(text);
+  // Check if it's just a single paragraph with no dialogue structure
+  const hasColons = text.includes(':');
+  const hasMultipleLines = text.split('\n').filter(line => line.trim()).length > 2;
   
-  // Look for code-like structure (multiple brackets and semicolons)
-  // This is a more nuanced check that won't reject transcripts that happen to contain a few brackets
-  const codeLikeStructure = (text.match(/{/g) || []).length > 2 && 
-                           (text.match(/}/g) || []).length > 2 && 
-                           (text.match(/;/g) || []).length > 3;
-  
-  // If any of these critical checks fail, it's not a transcript
-  if (!hasNameColonPattern) {
+  if (!hasColons) {
     return {
       isValid: false,
-      reason: 'INVALID FORMAT: Meeting transcript must contain speakers followed by colons (e.g., "John: Hello everyone").'
+      reason: 'The input doesn\'t appear to contain dialogue (no speaker names with colons found).'
     };
   }
   
-  if (!hasMultipleSpeakers) {
+  if (!hasMultipleLines) {
     return {
       isValid: false,
-      reason: 'INVALID FORMAT: Meeting transcript must contain at least 2 different speakers.'
+      reason: 'The input appears to be a single paragraph, not a conversation transcript.'
     };
   }
   
-  if (!hasConversationalStructure) {
-    return {
-      isValid: false,
-      reason: 'INVALID FORMAT: Meeting transcript must have multiple lines of conversation.'
-    };
-  }
-  
-  if (isJSON || isCode || codeLikeStructure) {
-    return {
-      isValid: false,
-      reason: 'INVALID CONTENT: The text appears to be code or JSON, not a meeting transcript.'
-    };
-  }
-  
-  // If we passed all critical checks, it's likely a valid transcript
+  // If we passed these basic checks, accept the input
   return { isValid: true };
 };
