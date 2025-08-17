@@ -13,34 +13,52 @@ export const validateTranscript = (text) => {
     };
   }
 
-  // Check for common meeting transcript patterns
-  const hasNames = /\w+\s*[:]\s*\w+/i.test(text); // Looks for "Name: text" pattern
-  const hasMultipleSpeakers = (text.match(/\w+\s*[:]/g) || []).length >= 2; // At least 2 different speakers
-  const hasDateOrTime = /\b(meeting|call|date|time|minutes|agenda)\b/i.test(text);
-  const hasConversationalStructure = text.split('\n').length >= 5; // At least 5 lines
-
-  // Check for non-transcript content indicators
-  const isCode = /{[\s\S]*}/.test(text) && /function|const|var|let|import|export|class/.test(text);
-  const isArticle = text.length > 1000 && !hasNames && !hasMultipleSpeakers;
-  const isRandomText = text.split(' ').length < 20;
-
-  // Scoring system
-  let score = 0;
-  if (hasNames) score += 2;
-  if (hasMultipleSpeakers) score += 3;
-  if (hasDateOrTime) score += 1;
-  if (hasConversationalStructure) score += 2;
-  if (isCode) score -= 5;
-  if (isArticle) score -= 3;
-  if (isRandomText) score -= 2;
-
-  // Decision
-  if (score >= 3) {
-    return { isValid: true };
-  } else {
+  // REQUIRED: Must have the "Name: text" pattern
+  const speakerPattern = /\b\w+\s*[:]\s*\S+/;
+  const hasNameColonPattern = speakerPattern.test(text);
+  
+  // Must have multiple speakers (at least 2 different people)
+  const speakerMatches = text.match(/\b\w+\s*[:]/g) || [];
+  const speakers = new Set(speakerMatches.map(s => s.replace(':', '').trim()));
+  const hasMultipleSpeakers = speakers.size >= 2;
+  
+  // Must have conversational structure (multiple lines)
+  const hasConversationalStructure = text.split('\n').length >= 3;
+  
+  // Check for JSON, code, or other non-transcript content
+  const isJSON = text.trim().startsWith('{') && text.trim().endsWith('}');
+  const isCode = /function|const|var|let|import|export|class|if\s*\(|for\s*\(|while\s*\(/.test(text);
+  const containsBrackets = /{[\s\S]*}/.test(text) && /[{};]/.test(text);
+  
+  // If any of these critical checks fail, it's not a transcript
+  if (!hasNameColonPattern) {
     return {
       isValid: false,
-      reason: 'The text doesn\'t appear to be a meeting transcript. Please paste a proper meeting transcript with speakers and dialogue.'
+      reason: 'INVALID FORMAT: Meeting transcript must contain speakers followed by colons (e.g., "John: Hello everyone").'
     };
   }
+  
+  if (!hasMultipleSpeakers) {
+    return {
+      isValid: false,
+      reason: 'INVALID FORMAT: Meeting transcript must contain at least 2 different speakers.'
+    };
+  }
+  
+  if (!hasConversationalStructure) {
+    return {
+      isValid: false,
+      reason: 'INVALID FORMAT: Meeting transcript must have multiple lines of conversation.'
+    };
+  }
+  
+  if (isJSON || isCode || containsBrackets) {
+    return {
+      isValid: false,
+      reason: 'INVALID CONTENT: The text appears to be code or JSON, not a meeting transcript.'
+    };
+  }
+  
+  // If we passed all critical checks, it's likely a valid transcript
+  return { isValid: true };
 };

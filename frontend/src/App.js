@@ -174,7 +174,7 @@ function App() {
         
         {error && (
           <div className="notification error-notification">
-            <p>{error}</p>
+            <p><strong>⚠️ Error:</strong> {error}</p>
             <button className="close-btn" onClick={() => setError('')}>×</button>
           </div>
         )}

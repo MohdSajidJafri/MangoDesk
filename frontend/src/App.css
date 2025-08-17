@@ -605,6 +605,9 @@ textarea {
   color: var(--error);
   border-left: 4px solid var(--error);
   animation: pulse 2s infinite;
+  font-size: 1.05rem;
+  font-weight: 500;
+  z-index: 2000;
 }
 
 @keyframes pulse {
