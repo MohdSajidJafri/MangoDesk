@@ -163,8 +163,8 @@ app.post('/api/send-email', async (req, res) => {
               ${htmlSummary}
             </div>
             <div class="footer">
-              <p>This summary was generated using MangoDesk Meeting Summarizer</p>
-              <p>© ${new Date().getFullYear()} MangoDesk</p>
+              <p>This summary was generated using Briefly</p>
+              <p>© ${new Date().getFullYear()} Briefly</p>
             </div>
           </div>
         </body>
