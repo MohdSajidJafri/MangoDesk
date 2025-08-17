@@ -1,18 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './App.css';
 import config from './config';
-import ReactMarkdown from 'react-markdown';
-import { 
-  FiFileText, 
-  FiSend, 
-  FiEdit, 
-  FiMail, 
-  FiAlertCircle, 
-  FiCheckCircle, 
-  FiCpu, 
-  FiLoader,
-  FiEyeOff
-} from 'react-icons/fi';
+
+// Import components
+import Header from './components/Header';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import SummaryForm from './components/SummaryForm';
+import HowItWorks from './components/HowItWorks';
+import Footer from './components/Footer';
 
 function App() {
   const [transcript, setTranscript] = useState('');
@@ -23,6 +19,8 @@ function App() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
+  
+  const formRef = useRef(null);
 
   const handleTranscriptChange = (e) => {
     setTranscript(e.target.value);
@@ -134,156 +132,54 @@ function App() {
     }
   };
 
+  const scrollToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Briefly(AI Meeting Summarizer)</h1>
-      </header>
+    <div className="app">
+      <Header />
       
-      <main className="App-main">
-        <section className="input-section">
-          <div className="section-title">
-            <FiFileText size={20} />
-            <h2>Input Meeting Transcript</h2>
-          </div>
-          
-          <form onSubmit={handleGenerateSummary}>
-            <div className="form-group">
-              <label htmlFor="transcript">Meeting Transcript:</label>
-              <textarea
-                id="transcript"
-                value={transcript}
-                onChange={handleTranscriptChange}
-                placeholder="Paste your meeting transcript here..."
-                rows="8"
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="prompt">Custom Instruction (optional):</label>
-              <input
-                type="text"
-                id="prompt"
-                value={prompt}
-                onChange={handlePromptChange}
-                placeholder="e.g., Summarize in bullet points for executives"
-              />
-            </div>
-            
-            <div className="btn-container">
-              <button type="submit" disabled={loading}>
-                {loading ? (
-                  <>
-                    <FiLoader className="icon-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <FiCpu />
-                    Generate Summary
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        </section>
-
-        {summary && (
-          <section className="output-section">
-            <div className="section-title">
-              <FiEdit size={20} />
-              <h2>Generated Summary</h2>
-            </div>
-            
-            <form onSubmit={handleSendEmail}>
-              <div className="form-group">
-                <div className="preview-header">
-                  <label htmlFor="summary-preview">Preview:</label>
-                  <button 
-                    type="button" 
-                    className="edit-toggle-btn" 
-                    onClick={toggleEditMode}
-                    aria-label={isEditMode ? "Hide editor" : "Edit summary"}
-                  >
-                    {isEditMode ? (
-                      <>
-                        <FiEyeOff size={16} />
-                        <span>Hide Editor</span>
-                      </>
-                    ) : (
-                      <>
-                        <FiEdit size={16} />
-                        <span>Edit Summary</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-                <div className="markdown-preview">
-                  <ReactMarkdown>{summary}</ReactMarkdown>
-                </div>
-              </div>
-              
-              {isEditMode && (
-                <div className="form-group edit-summary-container">
-                  <label htmlFor="summary">Edit Summary:</label>
-                  <textarea
-                    id="summary"
-                    value={summary}
-                    onChange={handleSummaryChange}
-                    rows="8"
-                  />
-                </div>
-              )}
-              
-              <div className="form-group">
-                <label htmlFor="recipients">
-                  <FiMail size={16} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
-                  Recipient Emails (comma-separated):
-                </label>
-                <input
-                  type="text"
-                  id="recipients"
-                  value={recipients}
-                  onChange={handleRecipientsChange}
-                  placeholder="email1@example.com, email2@example.com"
-                  required
-                />
-              </div>
-              
-              <div className="btn-container">
-                <button type="submit" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <FiLoader className="icon-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      <FiSend />
-                      Send Email
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </section>
-        )}
-
+      <main className="main-content">
+        <Hero onGetStarted={scrollToForm} />
+        <Features />
+        
+        <div ref={formRef}>
+          <SummaryForm
+            transcript={transcript}
+            prompt={prompt}
+            summary={summary}
+            recipients={recipients}
+            loading={loading}
+            isEditMode={isEditMode}
+            onTranscriptChange={handleTranscriptChange}
+            onPromptChange={handlePromptChange}
+            onSummaryChange={handleSummaryChange}
+            onRecipientsChange={handleRecipientsChange}
+            onGenerateSummary={handleGenerateSummary}
+            onSendEmail={handleSendEmail}
+            toggleEditMode={toggleEditMode}
+          />
+        </div>
+        
+        <HowItWorks />
+        
         {error && (
-          <div className="message error-message">
-            <FiAlertCircle size={20} />
-            {error}
+          <div className="notification error-notification">
+            <p>{error}</p>
+            <button className="close-btn" onClick={() => setError('')}>×</button>
           </div>
         )}
         
         {success && (
-          <div className="message success-message">
-            <FiCheckCircle size={20} />
-            {success}
+          <div className="notification success-notification">
+            <p>{success}</p>
+            <button className="close-btn" onClick={() => setSuccess('')}>×</button>
           </div>
         )}
       </main>
+      
+      <Footer />
     </div>
   );
 }
