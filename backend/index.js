@@ -94,16 +94,81 @@ app.post('/api/send-email', async (req, res) => {
     // Convert markdown to HTML for email
     const htmlSummary = marked.parse(summary);
     
-    // Send email
+    // Send email with styled template
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: recipients.join(', '),
       subject: subject || 'Meeting Summary',
       html: `
-        <h2>Meeting Summary</h2>
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          ${htmlSummary}
-        </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Meeting Summary</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              line-height: 1.6;
+              color: #333333;
+              margin: 0;
+              padding: 0;
+            }
+            .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .header {
+              background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+              padding: 20px;
+              text-align: center;
+              border-radius: 5px 5px 0 0;
+            }
+            .header h1 {
+              color: white;
+              margin: 0;
+              font-size: 24px;
+            }
+            .content {
+              background-color: #ffffff;
+              padding: 20px;
+              border: 1px solid #e0e0e0;
+              border-top: none;
+              border-radius: 0 0 5px 5px;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 20px;
+              font-size: 12px;
+              color: #888888;
+            }
+            ul {
+              padding-left: 20px;
+            }
+            li {
+              margin-bottom: 10px;
+            }
+            strong {
+              color: #2575fc;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h1>Meeting Summary</h1>
+            </div>
+            <div class="content">
+              ${htmlSummary}
+            </div>
+            <div class="footer">
+              <p>This summary was generated using MangoDesk Meeting Summarizer</p>
+              <p>© ${new Date().getFullYear()} MangoDesk</p>
+            </div>
+          </div>
+        </body>
+        </html>
       `,
     };
 
