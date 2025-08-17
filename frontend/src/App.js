@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import './App.css';
 import config from './config';
-import { validateTranscript } from './utils/transcriptValidator';
 
 // Import components
 import Header from './components/Header';
@@ -44,13 +43,6 @@ function App() {
     
     if (!transcript) {
       setError('Please provide a transcript');
-      return;
-    }
-
-    // Validate if the input is a proper meeting transcript
-    const validation = validateTranscript(transcript);
-    if (!validation.isValid) {
-      setError(validation.reason);
       return;
     }
 
