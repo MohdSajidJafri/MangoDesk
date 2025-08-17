@@ -184,6 +184,39 @@ button:disabled {
 }
 
 /* Markdown preview styles */
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.edit-toggle-btn {
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary-light);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: var(--transition);
+  min-width: auto;
+  font-weight: 500;
+}
+
+.edit-toggle-btn:hover {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  box-shadow: none;
+  transform: none;
+}
+
+.edit-toggle-btn span {
+  margin-left: 5px;
+}
+
 .markdown-preview {
   background-color: var(--light);
   padding: 20px;
@@ -193,6 +226,21 @@ button:disabled {
   overflow-y: auto;
   max-height: 350px;
   line-height: 1.6;
+}
+
+.edit-summary-container {
+  animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .markdown-preview h1, 

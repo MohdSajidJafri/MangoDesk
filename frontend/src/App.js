@@ -10,7 +10,9 @@ import {
   FiAlertCircle, 
   FiCheckCircle, 
   FiCpu, 
-  FiLoader
+  FiLoader,
+  FiEye,
+  FiEyeOff
 } from 'react-icons/fi';
 
 function App() {
@@ -21,6 +23,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const handleTranscriptChange = (e) => {
     setTranscript(e.target.value);
@@ -50,6 +53,7 @@ function App() {
       setLoading(true);
       setError('');
       setSuccess('');
+      setIsEditMode(false); // Reset edit mode when generating new summary
       
       const response = await fetch(`${config.apiUrl}/api/generate-summary`, {
         method: 'POST',
@@ -74,6 +78,10 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+  
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
   };
 
   const handleSendEmail = async (e) => {
@@ -191,21 +199,43 @@ function App() {
             
             <form onSubmit={handleSendEmail}>
               <div className="form-group">
-                <label htmlFor="summary-preview">Preview:</label>
+                <div className="preview-header">
+                  <label htmlFor="summary-preview">Preview:</label>
+                  <button 
+                    type="button" 
+                    className="edit-toggle-btn" 
+                    onClick={toggleEditMode}
+                    aria-label={isEditMode ? "Hide editor" : "Edit summary"}
+                  >
+                    {isEditMode ? (
+                      <>
+                        <FiEyeOff size={16} />
+                        <span>Hide Editor</span>
+                      </>
+                    ) : (
+                      <>
+                        <FiEdit size={16} />
+                        <span>Edit Summary</span>
+                      </>
+                    )}
+                  </button>
+                </div>
                 <div className="markdown-preview">
                   <ReactMarkdown>{summary}</ReactMarkdown>
                 </div>
               </div>
               
-              <div className="form-group">
-                <label htmlFor="summary">Edit Summary:</label>
-                <textarea
-                  id="summary"
-                  value={summary}
-                  onChange={handleSummaryChange}
-                  rows="8"
-                />
-              </div>
+              {isEditMode && (
+                <div className="form-group edit-summary-container">
+                  <label htmlFor="summary">Edit Summary:</label>
+                  <textarea
+                    id="summary"
+                    value={summary}
+                    onChange={handleSummaryChange}
+                    rows="8"
+                  />
+                </div>
+              )}
               
               <div className="form-group">
                 <label htmlFor="recipients">
